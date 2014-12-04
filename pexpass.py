@@ -3,8 +3,6 @@ import sys
 import pexpect
 import struct, fcntl, os, sys, signal
 
-print sys.argv
-
 def sigwinch_passthrough (sig, data):
     # Check for buggy platforms (see pexpect.setwinsize()).
     if 'TIOCGWINSZ' in dir(termios):
@@ -17,7 +15,11 @@ def sigwinch_passthrough (sig, data):
     global_pexpect_instance.setwinsize(a[0],a[1])
 
 ssh_newkey = 'Are you sure you want to continue connecting'
-p=pexpect.spawn('ssh otg-cms-ewr1')
+
+args = sys.argv[:]
+args.pop(0) #remove script name
+
+p=pexpect.spawn(args.pop(0), args)
 i=p.expect([ssh_newkey,'assword:',pexpect.EOF,pexpect.TIMEOUT],1)
 if i==0:
     p.sendline('yes')
