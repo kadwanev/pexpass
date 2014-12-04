@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import optparse
 import pexpect
 import struct, fcntl, os, sys, signal
 
@@ -16,7 +17,13 @@ def sigwinch_passthrough (sig, data):
 
 ssh_newkey = 'Are you sure you want to continue connecting'
 
-args = sys.argv[:]
+parser = optparse.OptionParser()
+#parser.add_option('-f', action="store", dest="filename")
+parser.add_option('-p', action="store", dest="password")
+#parser.add_option('-e', action="store_true", dest="envpass", default=False)
+
+options, args = parser.parse_args(sys.argv)
+
 args.pop(0) #remove script name
 
 p=pexpect.spawn(args.pop(0), args)
@@ -25,7 +32,7 @@ if i==0:
     p.sendline('yes')
     i=p.expect([ssh_newkey,'assword:',pexpect.EOF])
 if i==1:
-    p.sendline("datauser")
+    p.sendline(options.password)
 elif i==2:
     print "I either got key or connection timeout"
     pass
